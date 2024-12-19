@@ -1,17 +1,8 @@
 import { Scenes } from 'telegraf';
 import { SessionData } from '../bot';
+import { BusinessData } from '../types/global';
+import { analyzeBusinessData } from '../utils/analyzeBusinessData';
 
-
-interface BusinessData {
-    industry?: string;
-    objective?: string;
-    website?: string;
-    socialMedia?: string;
-    ppcCampaigns?: string;
-    targetAudience?: string;
-    location?: string;
-    generatedKeywords?: string[];
-}
 
 interface BusinessWizardSession extends Scenes.WizardSessionData {
   businessData: BusinessData;
@@ -115,12 +106,40 @@ export const BusinessAnalysisScene = new Scenes.WizardScene<BusinessWizardContex
       }
       ctx.wizard.state.businessData.location = ctx.message.text;
       await ctx.reply('✨ Thank you for providing all the information!\n\nI\'m now processing your business data to generate targeted keyword suggestions and insights. This analysis will take just a moment...\n\nPlease wait while I prepare your personalized recommendations. 🔄');
-      ctx.wizard.next();
+
+      const businessData = ctx.wizard.state.businessData;
+
+      // Analyze business data
+      const analysisResults = await analyzeBusinessData(businessData!);
+
+      if (analysisResults.length === 0) {
+        await ctx.reply('🔍 No keyword suggestions found based on your business data. Please try again with more detailed information.');
+      } else {
+        ctx.wizard.state.businessData!.generatedKeywords = analysisResults;
+  
+        let formattedResults = '🎯 Top Keyword Suggestions:\n';
+        
+        for (let i = 0; i < Math.min(5, analysisResults.length); i++) {
+          formattedResults += `   ${i + 1}. ${analysisResults[i]}\n`;
+        }
+        
+        formattedResults += '\n💡 Additional Recommendations:\n';
+        
+        for (let i = 5; i < analysisResults.length; i++) {
+          formattedResults += `   ${i + 1}. ${analysisResults[i]}\n`;
+        }
+        
+        await ctx.reply(
+          '✨ Analysis Complete! Here are your personalized keyword recommendations:\n\n' +
+          formattedResults + '\n\n' +
+          '💪 These keywords are tailored to your business profile and target audience. ' +
+          'Consider incorporating them into your marketing strategy for better visibility and engagement.'
+        );
+      }
     }
   },
-);
 
-// 
+);
 
 BusinessAnalysisScene.command('cancel', async (ctx) => {
   await ctx.reply('❌ Operation cancelled. You can start over anytime by using the /start command.');
