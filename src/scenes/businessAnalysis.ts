@@ -5,18 +5,9 @@ import { SessionData } from '../bot';
 interface BusinessData {
     industry?: string;
     objective?: string;
-    website?: {
-      url?: string;
-      analyzePermission?: boolean;
-    };
-    socialMedia?: {
-      socialMediaPlatforms?: string;
-      analyzePermission?: boolean;
-    };
-    ppcCampaigns?: {
-      exists: boolean;
-      analyzePermission?: boolean;
-    };
+    website?: string;
+    socialMedia?: string;
+    ppcCampaigns?: string;
     targetAudience?: string;
     location?: string;
     generatedKeywords?: string[];
@@ -37,115 +28,102 @@ interface BusinessWizardContext extends Scenes.WizardContext<SessionData> {
 export const BusinessAnalysisScene = new Scenes.WizardScene<BusinessWizardContext>(
   'business-analysis',
 
-  // Step - 1, This is the first step of the wizard, it executes when the user starts the wizard
+  // Step 1
   async (ctx) => {
     ctx.wizard.state.businessData = {};
-    await ctx.reply('What industry is your business in?');
+    await ctx.reply('🏢 Welcome to the Business Analysis Wizard!\n\nTo get started, please tell me which industry your business operates in. Be as specific as possible.');
     ctx.wizard.next();
   },
 
-  // Step - 2, This is the second step of the wizard, it executes when the user provides the industry
+  // Step 2
   async (ctx) => {
     if (ctx.message && 'text' in ctx.message) {
-      // I need to check if the businessData is already initialized, if not, initialize it, Else it will give me the type error
       if (!ctx.wizard.state.businessData) {
         ctx.wizard.state.businessData = {};
       }
       ctx.wizard.state.businessData.industry = ctx.message.text;
-      await ctx.reply('What is your business objective?');
+      await ctx.reply('🎯 Great! Now, what are your main business objectives?\n\nFor example:\n• Increase online sales\n• Boost brand awareness\n• Generate more leads');
       ctx.wizard.next();
     }
   },
 
-  // Step - 3, This is the third step of the wizard, it executes when the user provides the objective
+  // Step 3
   async (ctx) => {
     if (ctx.message && 'text' in ctx.message) {
-      // Safely store objective
       if (!ctx.wizard.state.businessData) {
         ctx.wizard.state.businessData = {};
       }
       ctx.wizard.state.businessData.objective = ctx.message.text;
-      await ctx.reply('What is your website URL?');
+      await ctx.reply('🌐 What is your business website URL?\n\nProviding your website will allow us to analyze your:\n• SEO performance\n• Content strategy\n• User experience\n• Technical optimization\n\nIf you don\'t have a website, please type "none".');
       ctx.wizard.next();
     }
   },
 
-  // Step - 4, This is the fourth step of the wizard, it executes when the user provides the website URL
-  async (ctx) => {
-    if (ctx.message && 'text' in ctx.message) {
-      // Safely store website
-      if (!ctx.wizard.state.businessData) {
-        ctx.wizard.state.businessData = {};
-      }
-      ctx.wizard.state.businessData.website = {
-        url: ctx.message.text,
-        analyzePermission: true,
-      };
-      await ctx.reply('Do you have any social media platforms?');
-      ctx.wizard.next();
-    }
-  },
-
-  // Step - 5, This is the fifth step of the wizard, it executes when the user provides the social media platforms
+  // Step 4
   async (ctx) => {
     if (ctx.message && 'text' in ctx.message) {
       if (!ctx.wizard.state.businessData) {
         ctx.wizard.state.businessData = {};
       }
-      ctx.wizard.state.businessData.socialMedia = {
-        socialMediaPlatforms: ctx.message.text,
-        analyzePermission: true,
-      };
-      await ctx.reply('Do you have any PPC campaigns?');
+      ctx.wizard.state.businessData.website = ctx.message.text;
+      await ctx.reply('📱 Let\'s talk about your social media presence.\n\nPlease share your main social media profiles (Facebook, Instagram, LinkedIn, etc.).\nThis will allow us to analyze:\n• Engagement rates\n• Content performance\n• Audience demographics\n• Growth opportunities\n\nIf you don\'t have any social media presence, type "none".');
       ctx.wizard.next();
     }
   },
 
-  // Step - 6, This is the sixth step of the wizard, it executes when the user provides the PPC campaigns
+  // Step 5
   async (ctx) => {
     if (ctx.message && 'text' in ctx.message) {
       if (!ctx.wizard.state.businessData) {
         ctx.wizard.state.businessData = {};
       }
-      ctx.wizard.state.businessData.ppcCampaigns = {
-        exists: true,
-        analyzePermission: true,
-      };
-      await ctx.reply('What is your target audience?');
+      ctx.wizard.state.businessData.socialMedia = ctx.message.text;
+      await ctx.reply('💰 Are you currently running any PPC (Pay-Per-Click) campaigns?\n\nIf yes, please provide details about your campaigns. This will allow us to analyze:\n• ROI performance\n• Keyword effectiveness\n• Budget optimization\n• Audience targeting\n\nIf none, simply type "none".');
       ctx.wizard.next();
     }
   },
 
-// Step - 7, This is the seventh step of the wizard, it executes when the user provides the target audience
-async (ctx) => {
-  if (ctx.message && 'text' in ctx.message) {
+  // Step 6
+  async (ctx) => {
+    if (ctx.message && 'text' in ctx.message) {
+      if (!ctx.wizard.state.businessData) {
+        ctx.wizard.state.businessData = {};
+      }
+      ctx.wizard.state.businessData.ppcCampaigns = ctx.message.text;
+      await ctx.reply('👥 Who is your target audience?\n\nPlease describe:\n• Age range\n• Interests\n• Pain points\n• Buying behavior');
+      ctx.wizard.next();
+    }
+  },
+
+  // Step 7
+  async (ctx) => {
+    if (ctx.message && 'text' in ctx.message) {
       if (!ctx.wizard.state.businessData) {
         ctx.wizard.state.businessData = {};
       }
       ctx.wizard.state.businessData.targetAudience = ctx.message.text;
-      await ctx.reply('What is your target location?');
+      await ctx.reply('📍 What is your target location?\n\nFor example:\n• Specific cities\n• Regions\n• Countries\n• Or "Worldwide"');
       ctx.wizard.next();
     }
   },
 
-  // Step - 8, This is the eighth step of the wizard, it executes when the user provides the target location
+  // Step 8
   async (ctx) => {
     if (ctx.message && 'text' in ctx.message) {
       if (!ctx.wizard.state.businessData) {
         ctx.wizard.state.businessData = {};
       }
       ctx.wizard.state.businessData.location = ctx.message.text;
-      await ctx.reply('Thank you for providing the information. I will now analyze your business and provide you with keyword suggestions.');
+      await ctx.reply('✨ Thank you for providing all the information!\n\nI\'m now processing your business data to generate targeted keyword suggestions and insights. This analysis will take just a moment...\n\nPlease wait while I prepare your personalized recommendations. 🔄');
       ctx.wizard.next();
     }
   },
-
 );
 
 // 
 
 BusinessAnalysisScene.command('cancel', async (ctx) => {
-  await ctx.reply('Operation cancelled');
+  await ctx.reply('❌ Operation cancelled. You can start over anytime by using the /start command.');
   return ctx.scene.leave();
 });
 
