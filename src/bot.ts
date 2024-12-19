@@ -6,10 +6,7 @@ import { TrendAnalysisScene, TrendWizardSession } from './scenes/trendAnalysis';
 
 export interface SessionData extends BusinessWizardSession, FAQWizardSession, TrendWizardSession {}
 
-type MyContext = Scenes.WizardContext<SessionData> & {
-  scene: Scenes.SceneContextScene<MyContext>;
-  wizard: Scenes.WizardContextWizard<MyContext>;
-};
+type MyContext = Scenes.WizardContext<SessionData>
 
 const bot = new Telegraf<MyContext>(BOT_TOKEN!);
 const stage = new Scenes.Stage<MyContext>([
