@@ -20,10 +20,12 @@ bot.use(stage.middleware());
 
 bot.command('start', (ctx) => {
   ctx.reply(
-    'Welcome to the Digital Marketing Assistant! Choose an option:\n\n' +
-    '1. /analyze - Analyze your business and get keyword suggestions\n' +
-    '2. /trends - Get industry benchmark data\n' +
-    '3. /faq - Ask questions about digital marketing'
+    '🤖 Welcome to the Digital Marketing Assistant!\n\n' +
+    'I can help you optimize your digital marketing strategy. Here are the available commands:\n\n' +
+    '📊 /analyze - Get personalized business analysis and keyword recommendations\n' +
+    '📈 /trends - Explore industry trends and benchmark data\n' +
+    '❓ /faq - Get answers to common digital marketing questions\n\n' +
+    'Choose any command to get started!'
   );
 });
 
