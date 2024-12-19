@@ -1,16 +1,14 @@
 import { Scenes } from 'telegraf';
 import { SessionData } from '../bot';
+import { generateFAQResponse } from '../utils/generateFAQResponse';
+
+interface QuestionAnswer {
+  question?: string;
+  answer?: string;
+}
 
 interface FAQData {
-  recentQuestions?: {
-    question: string;
-    answer: string;
-    timestamp: Date;
-  }[];
-  context?: {
-    industry?: string;
-    previousInteractions?: string[];
-  };
+  context?: QuestionAnswer[];
 }
 
 interface FAQWizardSession extends Scenes.WizardSessionData {
@@ -27,9 +25,44 @@ interface FAQWizardContext extends Scenes.WizardContext<SessionData> {
 
 export const FAQMarketingScene = new Scenes.WizardScene<FAQWizardContext>(
     'marketing-faq',
+
     async (ctx) => {
-        await ctx.reply('What is your question?');
+        ctx.wizard.state.faqData = {
+            context: []
+        };
+        await ctx.reply('👋 Welcome to the Marketing FAQ Assistant!\nI\'m here to help answer your marketing-related questions.\n\nWhat would you like to know?\n\nType "/cancel" to end the conversation.');
         ctx.wizard.next();
+    },
+
+    async (ctx) => {
+        if (!ctx.message || !('text' in ctx.message)) {
+            await ctx.reply('Please send a text message with your question.');
+            return;
+        }
+
+        const userInput = ctx.message.text;
+
+        if (userInput.toLowerCase() === 'exit' || userInput.toLowerCase() === '/cancel') {
+            await ctx.reply('Thank you for using Marketing FAQ Assistant! Goodbye 👋');
+            return ctx.scene.leave();
+        }
+
+        const answer = await generateFAQResponse(ctx.wizard.state.faqData, userInput);
+
+        if (!ctx.wizard.state.faqData!.context) {
+            ctx.wizard.state.faqData!.context = [];
+        }
+        ctx.wizard.state.faqData!.context.push({
+            question: userInput,
+            answer: answer,
+        });
+
+        await ctx.reply(answer);
+        await ctx.reply('Do you have any more questions? Ask away! Or type "exit" to end the conversation.');
+        if (answer.toLowerCase().includes('exit')) {
+            return ctx.scene.leave();
+        }
+        return ctx.wizard.selectStep(1);
     }
 );
 

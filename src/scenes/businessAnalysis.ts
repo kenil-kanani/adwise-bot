@@ -3,7 +3,6 @@ import { SessionData } from '../bot';
 import { BusinessData } from '../types/global';
 import { analyzeBusinessData } from '../utils/analyzeBusinessData';
 
-
 interface BusinessWizardSession extends Scenes.WizardSessionData {
   businessData: BusinessData;
 }
