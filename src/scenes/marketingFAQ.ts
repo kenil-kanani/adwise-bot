@@ -26,6 +26,7 @@ export const FAQMarketingScene = new Scenes.WizardScene<FAQWizardContext>(
         ctx.wizard.next();
     },
 
+    // Step 1
     async (ctx) => {
         if (!ctx.message || !('text' in ctx.message)) {
             await ctx.reply('Please send a text message with your question.');

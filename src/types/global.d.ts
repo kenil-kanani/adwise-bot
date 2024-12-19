@@ -17,3 +17,11 @@ export interface QuestionAnswer {
 export interface FAQData {
     context?: QuestionAnswer[];
 }
+
+export interface IndustryBenchmarks {
+    cpc: number;
+    ctr: number;
+    conversionRate: number;
+    costPerLead: number;
+    lastUpdated: Date;
+}
