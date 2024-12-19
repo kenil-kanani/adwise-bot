@@ -8,3 +8,12 @@ export interface BusinessData {
     location?: string;
     generatedKeywords?: string[];
 }
+
+export interface QuestionAnswer {
+    question?: string;
+    answer?: string;
+}
+
+export interface FAQData {
+    context?: QuestionAnswer[];
+}

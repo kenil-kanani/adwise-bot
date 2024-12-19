@@ -1,15 +1,7 @@
 import { Scenes } from 'telegraf';
 import { SessionData } from '../bot';
 import { generateFAQResponse } from '../utils/generateFAQResponse';
-
-interface QuestionAnswer {
-  question?: string;
-  answer?: string;
-}
-
-interface FAQData {
-  context?: QuestionAnswer[];
-}
+import { FAQData } from '../types/global';
 
 interface FAQWizardSession extends Scenes.WizardSessionData {
     faqData: FAQData;
@@ -47,7 +39,7 @@ export const FAQMarketingScene = new Scenes.WizardScene<FAQWizardContext>(
             return ctx.scene.leave();
         }
 
-        const answer = await generateFAQResponse(ctx.wizard.state.faqData, userInput);
+        const answer = await generateFAQResponse(ctx.wizard.state.faqData!, userInput);
 
         if (!ctx.wizard.state.faqData!.context) {
             ctx.wizard.state.faqData!.context = [];

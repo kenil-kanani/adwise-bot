@@ -1,6 +1,6 @@
-import { BusinessData } from "../types/global";
+import { BusinessData, FAQData } from "../types/global";
 
-async function generateFAQResponse(context: any, question: string) : Promise<string> {
+async function generateFAQResponse(context: FAQData, question: string) : Promise<string> {
     return 'answer';
 }
 
