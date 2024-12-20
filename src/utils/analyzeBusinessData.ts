@@ -14,7 +14,7 @@ async function analyzeBusinessData(
     const template = `Analyze this business data and suggest relevant keywords for digital marketing:
     Industry: {industry}
     Objective: {objective}
-    Website: {website}
+    WebsiteData : {websiteData}
     Target Audience: {targetAudience}
     Location: {location}
     
@@ -31,22 +31,27 @@ async function analyzeBusinessData(
       
       const prompt = PromptTemplate.fromTemplate(template);
       const chain = prompt.pipe(chat).pipe(new StringOutputParser());
+
+      const websiteData = await scrapeWebsite(businessData.website || 'N/A');
       
       response = await chain.invoke({
         industry: businessData.industry || 'N/A',
         objective: businessData.objective || 'N/A',
-        website: businessData.website || 'N/A',
+        websiteData: websiteData,
         targetAudience: businessData.targetAudience || 'N/A',
         location: businessData.location || 'N/A',
       });
+
     } else {
       const genAI = new GoogleGenerativeAI(GEMINI_API_KEY!);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const websiteData = await scrapeWebsite(businessData.website || 'N/A');
       
       const formattedPrompt = template
         .replace('{industry}', businessData.industry || 'N/A')
         .replace('{objective}', businessData.objective || 'N/A')
-        .replace('{website}', businessData.website || 'N/A')
+        .replace('{websiteData}', websiteData)
         .replace('{targetAudience}', businessData.targetAudience || 'N/A')
         .replace('{location}', businessData.location || 'N/A');
 
@@ -67,15 +72,19 @@ async function analyzeBusinessData(
 }
 
 async function getWebsiteURL(url: string) {
-  // call gemini api to get website url
-  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY!);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  try {
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY!);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  const formattedPrompt = `Given the following website URL, extract the website URL: ${url} and return the URL only. Do not include any other text. I need the URL to scrape the website. if the URL is not valid, return an empty string.`;
+    const formattedPrompt = `Given the following website URL, extract the website URL: ${url} and return the URL only. Do not include any other text. I need the URL to scrape the website. if the URL is not valid, return an empty string.`;
 
-  const result = await model.generateContent(formattedPrompt);
-  console.log('|' + result.response.text().trim() + '|');
-  return result.response.text().trim();
+    const result = await model.generateContent(formattedPrompt);
+    console.log('|' + result.response.text().trim() + '|');
+    return result.response.text().trim();
+  } catch (error) {
+    console.error('Error getting website URL:', error);
+    return '';
+  }
 }
 
 async function scrapeWebsite(website: string) {
@@ -112,7 +121,7 @@ async function scrapeWebsite(website: string) {
     return cleanedContent;
   } catch (error) {
     console.error('Error scraping website:', error);
-    throw error;
+    throw 'Error scraping website';
   }
 }
 
