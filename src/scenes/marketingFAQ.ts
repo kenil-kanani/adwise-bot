@@ -1,7 +1,7 @@
 import { Scenes } from 'telegraf';
 import { SessionData } from '../bot';
 import { generateFAQResponse } from '../utils/generateFAQResponse';
-import { FAQData } from '../types/global';
+import { FAQData, QuestionAnswer } from '../types/global';
 
 interface FAQWizardSession extends Scenes.WizardSessionData {
     faqData: FAQData;
@@ -43,7 +43,10 @@ export const FAQMarketingScene = new Scenes.WizardScene<FAQWizardContext>(
         const answer = await generateFAQResponse(ctx.wizard.state.faqData!, userInput);
 
         if (!ctx.wizard.state.faqData!.context) {
-            ctx.wizard.state.faqData!.context = [];
+            ctx.wizard.state.faqData!.context = [{
+                question: '',
+                answer: '',
+            }];
         }
         ctx.wizard.state.faqData!.context.push({
             question: userInput,
@@ -51,7 +54,7 @@ export const FAQMarketingScene = new Scenes.WizardScene<FAQWizardContext>(
         });
 
         await ctx.reply(answer);
-        await ctx.reply('Do you have any more questions? Ask away! Or type "exit" to end the conversation.');
+        // await ctx.reply('Do you have any more questions? Ask away! Or type "exit" to end the conversation.');
         if (answer.toLowerCase().includes('exit')) {
             return ctx.scene.leave();
         }
