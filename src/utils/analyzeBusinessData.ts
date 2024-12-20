@@ -11,14 +11,25 @@ async function analyzeBusinessData(
   provider: 'openai' | 'gemini' = 'gemini'
 ): Promise<string[]> {
   try {
-    const template = `Analyze this business data and suggest relevant keywords for digital marketing:
+    const template = `Analyze this business data and suggest the top 15 most relevant keywords for digital marketing:
     Industry: {industry}
     Objective: {objective}
     WebsiteData : {websiteData}
     Target Audience: {targetAudience}
     Location: {location}
     
-    Please provide a list of relevant keywords, one per line.`;
+    Instructions:
+    1. Analyze the business context carefully
+    2. Focus on high-intent, targeted keywords
+    3. Include a mix of:
+       - Industry-specific terms
+       - Location-based keywords
+       - Problem/solution keywords
+       - Long-tail variations
+    4. Consider search volume and competition
+    5. Ensure keywords align with business objectives
+    
+    Please provide exactly 15 relevant keywords, one per line, ordered by potential impact.`;
 
     let response: string;
 
@@ -121,7 +132,7 @@ async function scrapeWebsite(website: string) {
     return cleanedContent;
   } catch (error) {
     console.error('Error scraping website:', error);
-    throw 'Error scraping website';
+    return '';
   }
 }
 
