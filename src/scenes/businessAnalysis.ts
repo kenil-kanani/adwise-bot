@@ -135,6 +135,7 @@ export const BusinessAnalysisScene = new Scenes.WizardScene<BusinessWizardContex
           'Consider incorporating them into your marketing strategy for better visibility and engagement.'
         );
       }
+      ctx.scene.leave()
     }
   },
 
